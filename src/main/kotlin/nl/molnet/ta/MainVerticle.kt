@@ -90,7 +90,7 @@ class MainVerticle : AbstractVerticle() {
             val color = eventClient.getString("color")
             val clientId = eventClient.getString("clientId")
 
-            val position = Position(x, y, color)
+            val position = Position(x, y, color, clientId)
 
             val clientAddress = msg.address()
 

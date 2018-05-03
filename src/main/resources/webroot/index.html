@@ -9,7 +9,7 @@
             top: 0px;
             left: 0px;
             width:  100%;
-            height: 100%;
+            height: 98%;
         }
     </style>
     <script src="//cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
@@ -19,6 +19,25 @@
         var canvas;
         var context;
         var color = this.getRandomColor();
+        var clientId = guid();
+
+        var eb = new EventBus('http://192.168.170.128:8080/eventbus/');
+        eb.enableReconnect(true);
+
+        eb.onopen = function() {
+            eb.registerHandler('c.id.' + clientId, function (error, message) {
+                if (message) {
+                    //console.log(message.body.x + ','+ message.body.y);
+                    drawToCanvas(message.body.x, message.body.y, message.body.color);
+                } else {
+                    console.log(error);
+                }
+            });
+        };
+
+        this.fetchFromUrl('http://192.168.170.128:8080/api/register/' + clientId, returnFromCall);
+
+        /* -----------------------------------------------------------------------------------------------------------*/
 
         document.addEventListener("DOMContentLoaded", function(evt) {
             canvas = document.getElementById("canvas");
@@ -54,23 +73,6 @@
             var r = function () { return Math.floor(Math.random()*256) };
             return "rgb(" + r() + "," + r() + "," + r() + ")";
         }
-
-        var clientId = guid();
-        var eb = new EventBus('http://192.168.170.128:8080/eventbus/');
-        eb.enableReconnect(true);
-
-        this.fetchFromUrl('http://192.168.170.128:8080/api/register/' + clientId, returnFromCall);
-
-        eb.onopen = function() {
-            eb.registerHandler('c.id.' + clientId, function (error, message) {
-                if (message) {
-                    //console.log(message.body.x + ','+ message.body.y);
-                    drawToCanvas(message.body.x, message.body.y, message.body.color);
-                } else {
-                    console.log(error);
-                }
-            });
-        };
 
         function createPosition(x, y) {
             return { x: x, y: y, clientId: clientId, color: color }

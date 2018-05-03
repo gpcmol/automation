@@ -11,4 +11,6 @@ data class Position @JsonCreator(mode = JsonCreator.Mode.DEFAULT) constructor(
         @JsonProperty("y")
         val y: Long,
         @JsonProperty("color")
-        val color: String)
+        val color: String,
+        @JsonProperty("clientId")
+        val clientId: String)
